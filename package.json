@@ -1,7 +1,7 @@
 {
   "name": "git-remote",
   "version": "1.0.0",
-  "description": "remote git directly using github-api",
+  "description": "some basic and commonly used api of github",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,7 +12,7 @@
   },
   "keywords": [
     "git",
-    "github",
+    "github-api",
     "remote",
     "remote-git"
   ],
