@@ -1,0 +1,28 @@
+{
+  "name": "git-remote",
+  "version": "1.0.0",
+  "description": "remote git directly using github-api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lopo12123/git-remote.git"
+  },
+  "keywords": [
+    "git",
+    "github",
+    "remote",
+    "remote-git"
+  ],
+  "author": "lopo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lopo12123/git-remote/issues"
+  },
+  "homepage": "https://github.com/lopo12123/git-remote#readme",
+  "dependencies": {
+    "axios": "^0.24.0"
+  }
+}
