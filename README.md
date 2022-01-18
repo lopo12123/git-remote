@@ -11,3 +11,8 @@
 - description  描述
 - html_url 主页url  
 - clone_url `git clone`的地址  
+
+### IBranch.BranchDetail
+- commit.commit.author 作者信息  
+- commit.commit.committer 提交者信息  
+- commit.commit.tree 获取文件树(一层)  
