@@ -1,5 +1,8 @@
 import axios, {AxiosRequestHeaders} from "axios";
-import { IUser, IRepository } from './GithubApiInterface'
+import {IUser, IRepository, IBranch} from './GithubApiInterface'
+
+// @ts-ignore
+import {writeFileSync} from 'fs'
 
 class GithubApi {
     // region configs
@@ -49,23 +52,51 @@ class GithubApi {
         })
     }
 
-    getUser(): Promise<IUser.User> {
-        return this._GET('/user')
+    // region [GET] /repos/{username}/{repo}/branches
+    getBranchList(repoName: string): Promise<IBranch.BranchOverview[]> {
+        return this._GET(`/repos/${this.username}/${repoName}/branches`)
     }
+    // endregion
 
+    // region /repos/lopo12123/lopo-lib/branches/master
+    // undone
+    getBranchDetail() {
+
+    }
+    // endregion
+
+    // region [GET] /user/repos
     getRepos(): Promise<IRepository.Repo[]> {
         return this._GET(`/user/repos`)
     }
+    // endregion
+
+    // region [GET] /repos/{username}/{repo}/git/trees/{sha}
+    getTrees(repoName: string, shaSum: string) {
+        return this._GET(`repos/${this.username}/${repoName}/git/trees/${shaSum}`)
+    }
+    // endregion
+
+    // region [GET] /user
+    getUser(): Promise<IUser.User> {
+        return this._GET('/user')
+    }
+    // endregion
 }
 
 const api = new GithubApi('lopo12123', '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')
 
+console.time('api')
 api.getRepos()
     .then((res) => {
-        console.log(res)
+        // console.log(JSON.stringify(res))
+        writeFileSync('../test/res.json', JSON.stringify(res), { encoding: 'utf-8' })
+        console.log('done')
+        console.timeEnd('api')
     })
     .catch((err) => {
         console.log(err)
+        console.timeEnd('api')
     })
 
 // export {
