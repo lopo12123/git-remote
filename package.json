@@ -23,7 +23,8 @@
   },
   "homepage": "https://github.com/lopo12123/git-remote#readme",
   "dependencies": {
-    "axios": "^0.24.0"
+    "axios": "^0.24.0",
+    "crypto-js": "^4.1.1"
   },
   "devDependencies": {
     "@types/node": "^14.18.9"
