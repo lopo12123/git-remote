@@ -37,7 +37,7 @@ class GithubApi {
             return Buffer.from(ori).toString('base64')
         }
         else {
-            return Buffer.from(ori as string, 'base64').toString()
+            return Buffer.from(ori as string, 'base64')
         }
     }
 
@@ -85,6 +85,44 @@ class GithubApi {
                 })
         })
     }
+
+    // region [PUT] /repos/{owner}/{repo}/contents/{path}
+    /**
+     * @description create/update some resource
+     * @param filePath local path
+     * @param repoName repo
+     * @param fileFullPath remote path
+     * @param msg message
+     * @param file_sha if [update], this is required
+     */
+    contentUpdate(filePath: string, repoName: string, fileFullPath: string, msg: string = '', file_sha?: string) {
+        const bitmap = readFileSync(filePath)
+
+        const body: IRepository.RequestBody = {
+            message: msg,
+            content: this._Base64(bitmap, 'encode').toString()
+        }
+        if(!!file_sha) body.sha = file_sha
+        return this._PUT(`/repos/${this.username}/${repoName}/contents/${fileFullPath}`, body)
+    }
+    // endregion
+
+    // region [DELETE] /repos/{user}/{repo}/contents/{path}/{filename}
+    /**
+     * @description delete some resource
+     * @param repoName repo
+     * @param fileFullPath remote path
+     * @param msg message
+     * @param file_sha sha of the resource
+     */
+    contentDelete(repoName: string, fileFullPath: string, msg: string, file_sha: string) {
+        const body: IRepository.RequestBody = {
+            message: msg,
+            sha: file_sha
+        }
+        return this._DELETE(`/repos/${this.username}/${repoName}/contents/${fileFullPath}`, body)
+    }
+    // endregion
 
     // region [GET] /repos/{username}/{repo}/branches
     /**
@@ -140,38 +178,16 @@ class GithubApi {
         return this._GET('/user')
     }
     // endregion
-
-    // region [PUT] /repos/{owner}/{repo}/contents/{path}
-    contentUpdate(filePath: string, repoName: string, fileName: string, msg: string = '', file_sha?: string) {
-        const bitmap = readFileSync(filePath)
-
-        const body: IRepository.RequestBody = {
-            message: msg,
-            content: this._Base64(bitmap, 'encode')
-        }
-        if(!!file_sha) body.sha = file_sha
-        return this._PUT(`/repos/${this.username}/${repoName}/contents/${fileName}`, body)
-    }
-    // endregion
-    // region [DELETE] DELETE /repos/{user}/{repo}/contents/{path}/{filename}
-    contentDelete(repoName: string, fileFullPath: string, msg: string, file_sha: string) {
-        const body: IRepository.RequestBody = {
-            message: msg,
-            sha: file_sha
-        }
-        return this._DELETE(`/repos/${this.username}/${repoName}/contents/${fileFullPath}`, body)
-    }
-    // endregion
 }
 
 // test
 const api = new GithubApi('lopo12123', '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')
 
 console.time('api')
-api.contentDelete('test-can', '{path}', 'delete test', 'b6fc4c620b67d95f953a5c1c1230aaab5db5a1b0')
-// api.updateContent(path.resolve('../test/test.txt'), 'test-can', 'test1.txt', 'test create')
+api.getBranchDetail('test-can')
+// api.contentDelete('test-can', 'deep/test1.txt', 'delete test 2', 'b6fc4c620b67d95f953a5c1c1230aaab5db5a1b0')
+// api.contentUpdate(path.resolve('../test/test.txt'), 'test-can', 'deep/test1.txt', 'test create')
     .then((res) => {
-        // console.log(JSON.stringify(res))
         writeFileSync('../test/res.json', JSON.stringify(res), { encoding: 'utf-8' })
         console.log('done')
         console.timeEnd('api')
