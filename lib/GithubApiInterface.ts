@@ -177,14 +177,40 @@ export namespace IRepository {
     }
     // endregion
 
-    // region [GET] /repos/{username}/{repo}/git/trees/{sha}
+    // region [GET] /repos/{username}/{repo}/git/trees/{tree_sha}
     /**
      * @description `[GET] /repos/{username}/{repo}/git/trees/{tree_sha}` <br/>
      * @description returns a single tree using the SHA1 value for that tree
      * [doc]{@link https://docs.github.com/en/rest/reference/git#get-a-tree}
      */
     export interface Tree {
+        "sha": string
+        "url": string
+        "tree": {
+            "path": string
+            "mode": string
+            "type": string  // blob
+            "sha": string
+            "size": number
+            "url": string
+        }[]
+        "truncated": boolean
+    }
+    // endregion
 
+    // region [PUT] /repos/{owner}/{repo}/contents/{path}
+    /**
+     * @description the body to send when create/update assets
+     * [doc]{@link https://docs.github.com/en/rest/reference/repos#create-or-update-file-contents}
+     */
+    export interface RequestBody {
+        message: string
+        content?: string
+        sha?: string
+        owner?: string
+        repo?: string
+        path?: string
+        branch?: string
     }
     // endregion
 }

@@ -1,8 +1,11 @@
 import axios, {AxiosRequestHeaders} from "axios";
-import {IUser, IRepository, IBranch} from './GithubApiInterface'
+import {IUser, IRepository, IBranch} from "./GithubApiInterface";
+import {Buffer} from "buffer";
+import {readFileSync} from "fs";
 
 // @ts-ignore
 import {writeFileSync} from 'fs'
+import path from "path";
 
 class GithubApi {
     // region configs
@@ -29,7 +32,16 @@ class GithubApi {
         }
     }
 
-    protected _GET(url: string): Promise<any>{
+    protected _Base64(ori: string | Buffer, type: 'encode' | 'decode') {
+        if(type === 'encode') {
+            return Buffer.from(ori).toString('base64')
+        }
+        else {
+            return Buffer.from(ori as string, 'base64').toString()
+        }
+    }
+
+    public _GET(url: string): Promise<any>{
         return new Promise((resolve, reject) => {
             axios.get(url, this.axiosConfig)
                 .then(({data}) => {
@@ -40,9 +52,31 @@ class GithubApi {
                 })
         })
     }
-    protected _POST(url: string): Promise<any> {
+    public _POST(url: string): Promise<any> {
         return new Promise((resolve, reject) => {
             axios.post(url, this.axiosConfig)
+                .then(({data}) => {
+                    resolve(data)
+                })
+                .catch((err) => {
+                    reject(err)
+                })
+        })
+    }
+    public _PUT(url: string, body: any): Promise<any> {
+        return new Promise((resolve, reject) => {
+            axios.put(url, body, this.axiosConfig)
+                .then(({data}) => {
+                    resolve(data)
+                })
+                .catch((err) => {
+                    reject(err)
+                })
+        })
+    }
+    public _DELETE(url: string, body: any): Promise<any> {
+        return new Promise((resolve, reject) => {
+            axios.delete(url, {...this.axiosConfig, data: body})
                 .then(({data}) => {
                     resolve(data)
                 })
@@ -107,28 +141,45 @@ class GithubApi {
     }
     // endregion
 
-    // region
-    sendCommit() {
+    // region [PUT] /repos/{owner}/{repo}/contents/{path}
+    contentUpdate(filePath: string, repoName: string, fileName: string, msg: string = '', file_sha?: string) {
+        const bitmap = readFileSync(filePath)
 
+        const body: IRepository.RequestBody = {
+            message: msg,
+            content: this._Base64(bitmap, 'encode')
+        }
+        if(!!file_sha) body.sha = file_sha
+        return this._PUT(`/repos/${this.username}/${repoName}/contents/${fileName}`, body)
+    }
+    // endregion
+    // region [DELETE] DELETE /repos/{user}/{repo}/contents/{path}/{filename}
+    contentDelete(repoName: string, fileFullPath: string, msg: string, file_sha: string) {
+        const body: IRepository.RequestBody = {
+            message: msg,
+            sha: file_sha
+        }
+        return this._DELETE(`/repos/${this.username}/${repoName}/contents/${fileFullPath}`, body)
     }
     // endregion
 }
 
 // test
-const api = new GithubApi('lopo12123', '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')
+const api = new GithubApi('lopo12123', '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')
 
-// console.time('api')
-// api.getBranchDetail('lopo-lib', 'master')
-//     .then((res) => {
-//         // console.log(JSON.stringify(res))
-//         writeFileSync('../test/res.json', JSON.stringify(res), { encoding: 'utf-8' })
-//         console.log('done')
-//         console.timeEnd('api')
-//     })
-//     .catch((err) => {
-//         console.log(err)
-//         console.timeEnd('api')
-//     })
+console.time('api')
+api.contentDelete('test-can', '{path}', 'delete test', 'b6fc4c620b67d95f953a5c1c1230aaab5db5a1b0')
+// api.updateContent(path.resolve('../test/test.txt'), 'test-can', 'test1.txt', 'test create')
+    .then((res) => {
+        // console.log(JSON.stringify(res))
+        writeFileSync('../test/res.json', JSON.stringify(res), { encoding: 'utf-8' })
+        console.log('done')
+        console.timeEnd('api')
+    })
+    .catch((err) => {
+        console.log(err)
+        console.timeEnd('api')
+    })
 
 // export {
 //     GithubApi
