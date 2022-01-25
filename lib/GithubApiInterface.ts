@@ -5,7 +5,8 @@
 export namespace IBranch {
     // region [GET] /repos/{owner}/{repo}/branches
     /**
-     * @description item of branchList
+     * @description item of branchList <br/>
+     * @description `[GET] /repos/{owner}/{repo}/branches`
      * [doc]{@link https://docs.github.com/en/rest/reference/branches#list-branches}
      */
     export interface BranchOverview {
@@ -27,7 +28,8 @@ export namespace IBranch {
 
     // region [GET] /repos/{owner}/{repo}/branches/{branch}
     /**
-     * @description details of branch
+     * @description details of branch <br/>
+     * @description `[GET] /repos/{owner}/{repo}/branches/{branch}`
      * [doc]{@link https://docs.github.com/en/rest/reference/branches#get-a-branch}
      */
     export interface BranchDetail {
@@ -56,17 +58,35 @@ export namespace IBranch {
                 "verification": {
                     "verified": boolean
                     "reason": string
-                    "signature": null  // TODO
-                    "payload": null  // TODO
+                    "signature": null
+                    "payload": null
                 }
             }
             "url": string
             "html_url": string
             "comments_url": string
-            "author": string
-            "committer": string
-            // TODO TODO
+            "author": null
+            "committer": null
+            "parents": {
+                "sha": string
+                "url": string
+                "html_url": string
+            }[]
         }
+        "_links": {
+            "self": string
+            "html": string
+        }
+        "protected": boolean
+        "protection": {
+            "enabled": boolean
+            "required_status_checks": {
+                "enforcement_level": "on" | "off"
+                "contexts": string[]
+                "checks": string[]
+            }
+        }
+        "protection_url": string
     }
     // endregion
 }
@@ -154,6 +174,17 @@ export namespace IRepository {
         "pushed_at": string
         "created_at": string
         "updated_at": string
+    }
+    // endregion
+
+    // region [GET] /repos/{username}/{repo}/git/trees/{sha}
+    /**
+     * @description `[GET] /repos/{username}/{repo}/git/trees/{tree_sha}` <br/>
+     * @description returns a single tree using the SHA1 value for that tree
+     * [doc]{@link https://docs.github.com/en/rest/reference/git#get-a-tree}
+     */
+    export interface Tree {
+
     }
     // endregion
 }
